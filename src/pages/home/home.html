@@ -1,0 +1,30 @@
+<ion-header>
+  <ion-navbar>
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>Yara</ion-title>
+  </ion-navbar>
+</ion-header>
+
+
+<ion-content padding>
+  <ion-grid>
+    <ion-row>
+      <ion-col>
+        <timer #timer (timerFinished)="timerFinished($event)" (timerStarted)="timerStarted()"></timer>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col col-6 col-sm>
+        <yara-distance></yara-distance>
+      </ion-col>
+      <ion-col col-6 col-sm>
+        <yara-average-speed></yara-average-speed>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+  <!--<button ion-button  large icon-only round>
+    <ion-icon name="play"></ion-icon>
+  </button>-->
+</ion-content>

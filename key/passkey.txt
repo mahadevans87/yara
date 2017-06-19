@@ -1,0 +1,7 @@
+pwd: yaraionionic
+
+jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore key\my-release-key.keystore .\platforms\a
+ndroid\build\outputs\apk\android-release-unsigned.apk alias_name
+
+"alias_name" is the alias name
+
