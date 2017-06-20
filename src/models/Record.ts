@@ -1,5 +1,10 @@
 export class Record {
-  constructor(timestamp: Number, latitude: Number, longitude: Number, distanceFromStart: Number, currentSpeed: Number, averageSpeed: Number) {
-    
+  constructor(public timestamp: number,
+    public latitude: number,
+    public longitude: number,
+    public distanceFromStart: number,
+    public currentSpeed: number,
+    public averageSpeed: number) {
+
   }
 }

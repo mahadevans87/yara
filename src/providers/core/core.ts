@@ -7,6 +7,7 @@ import { Geoposition } from "@ionic-native/geolocation";
 import { Session } from "../../models/Session";
 import { Record } from "../../models/Record";
 import { Location } from "../../models/Location";
+import { Storage } from "@ionic/storage";
 
 /*
   Generated class for the CoreProvider provider.
@@ -30,7 +31,8 @@ export class CoreProvider {
   private runSession: Session;
   private startLocation: Location;
 
-  constructor(private timerProvider: TimerProvider, private locationProvider: LocationProvider) {
+  constructor(private timerProvider: TimerProvider, private locationProvider: LocationProvider,
+    private storageProvider: Storage) {
     console.log('Hello CoreProvider Provider');
   }
 
@@ -39,7 +41,7 @@ export class CoreProvider {
 
     this.timerProvider.timerStarted.subscribe(() => {
       this.runSession = new Session('Morning Run', 0, null);
-      this.currentDistance  = 0;
+      this.currentDistance = 0;
       this.averageSpeed = 0;
       this.elapsedTime = 0;
       this.startLocation = undefined;
@@ -47,14 +49,18 @@ export class CoreProvider {
       this.locationProvider.startTracking();
     });
 
+    this.timerProvider.timerFinished.subscribe(() => {
+      this.saveSession();
+    });
+
     this.locationProvider.backgroundLocationReceived.subscribe((location: Location) => {
-      this.runSession.pushRecord(new Record(location.timestamp, location.lat, location.lon, this.currentDistance, 0, this.averageSpeed));
       this.computeStats(location);
+      this.runSession.pushRecord(new Record(location.timestamp, location.lat, location.lon, this.currentDistance, 0, this.averageSpeed));
     });
 
     this.locationProvider.foregroundLocationReceived.subscribe((location: Location) => {
-      this.runSession.pushRecord(new Record(location.timestamp, location.lat, location.lon, this.currentDistance, 0, this.averageSpeed));
       this.computeStats(location);
+      this.runSession.pushRecord(new Record(location.timestamp, location.lat, location.lon, this.currentDistance, 0, this.averageSpeed));
     });
   }
 
@@ -98,5 +104,24 @@ export class CoreProvider {
 
   private toRad(degree: number) {
     return degree * Math.PI / 180;
+  }
+
+  private saveSession(): void {
+    var sessions: Array<Session>;
+    this.storageProvider.get('runs').
+      then((result) => {
+        sessions = JSON.parse(result);
+        if (!sessions) {
+          sessions = new Array<Session>();
+        }
+        sessions.push(this.runSession);
+        console.log(this.runSession);
+        console.log(JSON.stringify(this.runSession));
+        this.storageProvider.set('runs', JSON.stringify(sessions));
+        this.runSession = null;
+      }).catch((error) => {
+        console.log("Something went wrong - " + error);
+        this.runSession = null;
+      });
   }
 }
